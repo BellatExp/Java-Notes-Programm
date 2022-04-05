@@ -40,6 +40,7 @@ public class User {
     public int getNumberOfNotes(){
         return this.notes.size();
     }
+
     public Note getOneNote(int number) {
         return this.notes.get(number);
     }
@@ -52,7 +53,7 @@ public class User {
         this.notes.remove(x);
     }
 
-    public String notestoString() //
+    public String notesToString() //
      {
          int i = 1;
          String res = "";

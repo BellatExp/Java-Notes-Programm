@@ -1,23 +1,32 @@
 package org.example;
 
-import java.util.Date;
+import java.time.LocalDate;
+
 
 public class Note {
+
     private String name;
     private String text;
-    private Date date;
+    private LocalDate date;
     private String hashTags;
 
     public Note(String name, String text, String tags){
         this.name =  name;
         this.text = text;
-        this.date = new Date();
+        this.date = LocalDate.now();
         this.hashTags = tags;
     }
 
-    public void setDate(Date date) {
+    public Note(String name, String text, String tags, LocalDate date){ // Constructor for creating obj after reading a file
+        this.name =  name;
+        this.text = text;
         this.date = date;
+        this.hashTags = tags;
     }
+
+    /*public void setDate(LocalDate date) {
+        this.date = date;
+    }*/
 
     public void setName(String name) {
         this.name = name;
@@ -39,7 +48,7 @@ public class Note {
         return text;
     }
 
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
@@ -53,7 +62,7 @@ public class Note {
         return "[" + date.toString() + "] " +
                 " " + name + " " +
                 " " + text + " " +
-                " " + hashTags + "\n";
+                " " + hashTags;
     }
 
 }
