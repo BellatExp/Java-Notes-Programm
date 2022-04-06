@@ -1,32 +1,47 @@
 package org.example;
 
 import java.time.LocalDate;
-
+import java.util.ArrayList;
+import java.util.Optional;
 
 public class Note {
 
     private String name;
     private String text;
     private LocalDate date;
-    private String hashTags;
+    private ArrayList<String> hashTags;
 
-    public Note(String name, String text, String tags){
-        this.name =  name;
+    /*public Note(String name, String text, ArrayList<String> tags){ // Constructor for creating a new obj
+        this.name = name;
         this.text = text;
         this.date = LocalDate.now();
-        this.hashTags = tags;
+        this.hashTags = new ArrayList<>();
+        this.hashTags.addAll(tags);
+    }*/
+
+    public Note(String name, String text, String tags){ // Constructor for creating a new obj
+        this.name = name;
+        this.text = text;
+        this.date = LocalDate.now();
+        this.hashTags = new ArrayList<>();
+        this.tagsFromString(tags); //
     }
 
-    public Note(String name, String text, String tags, LocalDate date){ // Constructor for creating obj after reading a file
-        this.name =  name;
+    /*public Note(String name, String text, ArrayList<String> tags, LocalDate date){ // Constructor for creating obj after reading a file
+        this.name = name;
         this.text = text;
         this.date = date;
-        this.hashTags = tags;
-    }
-
-    /*public void setDate(LocalDate date) {
-        this.date = date;
+        this.hashTags = new ArrayList<>();
+        this.hashTags.addAll(tags);
     }*/
+
+    public Note(String name, String text, String tags, LocalDate date){ // Constructor for creating obj after reading a file
+        this.name = name;
+        this.text = text;
+        this.date = date;
+        this.hashTags = new ArrayList<>();
+        this.tagsFromString(tags);
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -36,8 +51,9 @@ public class Note {
         this.text = text;
     }
 
-    public void setHashTags(String hashTags) {
-        this.hashTags = hashTags;
+    public void setHashTags(String str) {
+        this.hashTags.clear();
+        this.tagsFromString(str);
     }
 
     public String getName() {
@@ -52,17 +68,39 @@ public class Note {
         return date;
     }
 
-    public String getHashTags() {
+    public ArrayList<String> getHashTags() {
         return hashTags;
     }
 
+    public String tagsToString() {
+
+        if (this.hashTags == null) return "";
+        if (this.hashTags.isEmpty()) return "";
+
+        String res = "";
+         for (String s:this.hashTags) {
+             res = res.concat("#" + s);
+         }
+      return res;
+     }
+
+     private void tagsFromString(String tags) {
+
+        if (tags == null) return;
+        if (tags.isEmpty()) return;
+
+        String[] spl = tags.split("\\#");
+
+         for (String s: spl) {
+             this.hashTags.add(s);
+         }
+     }
+
     @Override
-     public String toString()
-    {
+     public String toString() {
         return "[" + date.toString() + "] " +
                 " " + name + " " +
                 " " + text + " " +
-                " " + hashTags;
+                " " + this.tagsToString();
     }
-
 }

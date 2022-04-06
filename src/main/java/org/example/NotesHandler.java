@@ -2,6 +2,7 @@ package org.example;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class NotesHandler { // Auxiliary class for working with Nodes
 
@@ -22,7 +23,6 @@ public class NotesHandler { // Auxiliary class for working with Nodes
     public static String viewFiltering (ArrayList<Note> notes, LocalDate date) // filtering by date
     {
         // !! Расширить - поиск по отдельному году, месяц и дню
-
         String result = "";
 
         for (Note not: notes) { // Search in every note
@@ -38,6 +38,17 @@ public class NotesHandler { // Auxiliary class for working with Nodes
 
     public static String viewFiltering (ArrayList<Note> notes, String tag) // filtering by tag
     {
-        return "";
+        HashSet<String> preRes = new HashSet<>();
+
+        for (Note not:notes){
+            for (String s: tag.split("#")) {
+
+                if (not.getHashTags().contains(s))
+                 {
+                     preRes.add(not.toString());
+                 }
+            }
+        }
+        return preRes.toString();
     }
 }

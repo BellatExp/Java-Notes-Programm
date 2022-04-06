@@ -1,19 +1,24 @@
 package org.example;
 
+import javax.sound.midi.Soundbank;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
 
         Scanner scanner = new Scanner(System.in);
 
-    //============= SANDBOX ============
+        BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
 
+    //============= SANDBOX ============
         /*LocalDate ld = LocalDate.now();
 
         System.out.println(ld.getDayOfMonth());
@@ -37,95 +42,101 @@ public class Main {
         System.out.println(ggg.getDayOfMonth());
         System.out.println(ggg.getMonthValue());
         System.out.println(ggg.getYear()); */
-
     //=====================================
-
-        // User(s)
-        // Creating Users / Reading users from file
-
-        User user = new User("Neo","Zion");
-
-        // Notes
-        // Reading notes from file
 
         //  ALARM  - исключения - https://habr.com/ru/post/112042/
 
-        Note not = new Note("Job","9:00 - Meeting","#Job");
+        User user = new User("Neo","Zion");
 
-        System.out.println(not.toString());
+        //-- User Authentication
+       /* do {
+            System.out.print("Enter login: ");
 
-        String uLogin;
-        String pass;
-
-        System.out.print("Enter login: ");
-
-        do {
-            uLogin = scanner.next();
-
-            if (uLogin.equals(user.getLogin()) == false)
+            if (scanner.nextLine().equals(user.getLogin()) == false)
              {
-                 System.out.print("Error! Incorrect login!\n Enter login: ");
+                System.out.print("Error! Incorrect login!\n");
+                continue;
+             }
+
+            System.out.print("Enter password: ");
+
+            if (scanner.nextLine().equals(user.getPassword()) == false)
+             {
+                System.out.print("Error! Incorrect password!\n");
              }
             else break;
         } while(true);
 
-        System.out.print("Enter password: ");
+        System.out.println("\nAccess granted... Welcome, " + user.getLogin()); */
 
-        do {
-            pass = scanner.next();
+        // Reading Users's Notes from file
+          Utility.readUserNotes(user);
 
-            if (pass.equals(user.getPassword()) == false)
-            {
-                System.out.print("Error! Incorrect password!\n Enter password: ");
-            }
-            else break;
-        } while(true);
+       // Note not = new Note("Job","9:00 - Meeting","#Job");
+       // System.out.println(not.toString());
 
-        System.out.println("Access granted... Welcome, " + user.getLogin());
-
-        int option = 0;
+        int option = 0; // option from menu
 
         do
          {
-            printMenu();
+            Utility.printMenu();
             option = scanner.nextInt();
 
           switch (option)
           {
               case 1: // Add note
                {
-                  String name;
-                  String txt;
-                  String tags;
+                  String name = "";
+                  String txt = "";
+                  String tags = "";
 
-                  System.out.println("\n Adding a new note:");
-                  System.out.print("Enter note Name -> ");
-                  name = scanner.next();
+                  System.out.println("\nAdding a new note:");
+                  System.out.print("Enter note Name; If there is NO name => press Enter \n --> ");
+                  name = name.concat(consoleReader.readLine());
 
-                  System.out.print("\nEnter note Text -> ");
-                  txt = scanner.next();
+                  System.out.print("\nEnter note Text --> ");
+                  txt = txt.concat(consoleReader.readLine());
 
-                  System.out.print("\nEnter note HashTags; press Enter if there are no tags -> ");
+                  do {
+                      System.out.print("\nEnter note hashTags;\n Examples: 1.#work 2.#work_hard 3.#noPain#no_Gain...\n If there are NO hashTags => press Enter \n --> ");
+                      tags = tags.concat(consoleReader.readLine());
 
-                  // NOTE! - Need check the correctness of tags!
+                      if (Utility.checkTagsString(tags)) {
+                          user.addNote(new Note(name, txt, tags));
+                          break;
+                       }
+                      else System.out.println("Error! Incorrect format of the entered tags!");
+                  } while (true);
 
-                  tags = scanner.next();
-
-                  user.addNote(new Note(name, txt, tags));
                   break;
                }
 
               case 2: // Delete note
                {
+                   if (user.getNumberOfNotes() == 0)
+                   {
+                       System.out.println("\n There is not a single note!");
+                       break;
+                   }
+
                   int num;
 
                   System.out.println("\n Deleting Note:");
-                  System.out.println(user.notesToString()); //  Show all notes to User
-                  System.out.printf("Enter Number of note -> ");
-                  num = scanner.nextInt();
+                  System.out.println(user.notesToString()); // Show all notes to User
 
-                  user.deleteNode(num-1);
-                  break;
+                  do {
+                      System.out.print("Enter Number of note to delete -> ");
+                      num = scanner.nextInt();
+
+                      if (num < user.getNumberOfNotes()) // check number
+                       {
+                          user.deleteNode(num-1);
+                          break;
+                       }
+                      else System.out.println(" Error! Incorrect number of Note!");
+                  } while(true);
+
+                  break; // end case 2 - Delete note
                }
 
               case 3: // Edit note
@@ -138,7 +149,7 @@ public class Main {
 
                   do {
                       System.out.println(user.notesToString()); // Show all notes to User
-                      System.out.printf("Enter the Number of note -> ");
+                      System.out.print("Enter the Number of note -> ");
 
                       noteNum = scanner.nextInt();
 
@@ -156,28 +167,28 @@ public class Main {
                                   System.out.println("Old Name: " + user.getOneNote(noteNum).getName());
                                   System.out.print("Enter new Name -> ");
 
-                                  user.getOneNote(noteNum).setName(scanner.next());
+                                  user.getOneNote(noteNum).setName(consoleReader.readLine());
                                   break;
                               }
                               case 2:{ // Edit Text
                                   System.out.println("Old Text: " + user.getOneNote(noteNum).getText());
                                   System.out.print("Enter new Text -> ");
 
-                                  user.getOneNote(noteNum).setText(scanner.next());
+                                  user.getOneNote(noteNum).setText(consoleReader.readLine());
                                   break;
                               }
                               case 3:{ // Edit hashTags
                                   System.out.println("Old hashTags: " + user.getOneNote(noteNum).getHashTags());
                                   System.out.print("Enter new hashTags -> ");
 
-                                  user.getOneNote(noteNum).setHashTags(scanner.next());
+                                  user.getOneNote(noteNum).setHashTags(consoleReader.readLine());
                                   break;
                               }
                               default: System.out.println("Error! Wrong option number!"); break;
                           }
                       } while (optionNum != 4);
 
-                      System.out.printf("Do you want to edit another note? 1 - yes; 0 - No;");
+                      System.out.print("Do you want to edit another note? 1 - Yes; 0 - No;");
                       endFl = scanner.nextInt();
 
                   } while (endFl != 0);
@@ -204,7 +215,6 @@ public class Main {
                        switch (mode)
                        {
                            case 1:{ // filtering by date
-
                                // !! Расширить - поиск по отдельному году, месяц и дню
 
                                System.out.print("Enter date in format \"DD MM YYYY\"\n --> ");
@@ -220,18 +230,17 @@ public class Main {
                            }
 
                            case 2:{ // filtering by hashTags
-
-                               boolean fl = false;
                                String tags;
 
                                do {
-                                   System.out.print("Enter hashTag(s)\n --> "); // US/UK YYYY-MM-DD ???
+                                   System.out.print("\nEnter note hashTags;\n Examples: 1.#work 2.#work_hard 3.#noPain#no_Gain...\n If there are NO hashTags => press Enter \n --> ");
+                                   tags = consoleReader.readLine();
 
-                                   // Проверка корректности введённого тэга(ов)
-
-                                    tags = scanner.next();
-
-                               } while (!fl);
+                                   if (Utility.checkTagsString(tags)) {
+                                       break;
+                                   }
+                                   else System.out.println("Error! Incorrect format of the entered tags!");
+                               } while (true);
 
                                System.out.println(NotesHandler.viewFiltering(user.getNotes(),tags));
 
@@ -251,8 +260,8 @@ public class Main {
                    String content;
                    ArrayList<Note> res = new ArrayList<>();
 
-                   System.out.printf("Еnter the search substring --> ");
-                   content = scanner.next();
+                   System.out.print("\nЕnter the search substring --> ");
+                   content = consoleReader.readLine();
 
                    System.out.println("Search results:");
                    res = NotesHandler.contentSearch(user.getNotes(),content);// Search
@@ -261,25 +270,12 @@ public class Main {
                }
               case 6: // Exit - save all notes to file
                {
-
+                Utility.writeUsersNotes(user.getNotes()); // Re-Write users notes to file
                }
-
               default: System.out.println("Error! Wrong option number!"); break;
           }
          } while (option != 6);
 
         System.out.println("\n Good bye, Mr. Anderson.");
-    }
-
-    public static void printMenu()
-    {
-        System.out.print( "Choose option:\n" +
-                            "1. Add note\n" +
-                            "2. Delete note\n" +
-                            "3. Edit note\n" +
-                            "4. View notes using filters\n" +
-                            "5. Search by \"Content\"\n" +
-                            "6. Exit (Notes will be saved in file)\n" +
-                            "----> ");
     }
 }

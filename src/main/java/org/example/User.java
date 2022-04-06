@@ -6,15 +6,18 @@ public class User {
 
     private String login;
     private String password;
-
     private ArrayList<Note> notes; // Users notes
 
     public User(String login, String password) {
 
         this.login = login;
         this.password = password;
+        this.notes = new ArrayList<>(); //
+    }
 
-        notes = new ArrayList<>();
+    public User(String login, String password, ArrayList<Note> notes){
+        this(login,password);
+        this.notes.addAll(notes);
     }
 
     public void setLogin(String login) {
