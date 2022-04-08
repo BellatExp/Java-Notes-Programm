@@ -1,3 +1,4 @@
-09-12-2000 'First. Damn!' 'Hello, My friend. Java. C++.' #work#hello#help_me
-05-05-1000 'First. Damn!' 'Hello, My friend. Java. C++.'
-10-01-500 '' 'Hello, My friend. Java.' C++.
+2000-12-03 'First. Damn!' 'Hello, My friend. C++.' #work#hello#help_me
+1000-05-06 'First. Damn!' 'Hello, My friend. Python' 
+0500-01-08 '' 'Hello, My friend. Java. C++.' 
+2022-04-08 'secondTry' 'helpME!' #3#round#is#mine

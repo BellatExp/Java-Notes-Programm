@@ -1,14 +1,11 @@
 package org.example;
 
-import javax.sound.midi.Soundbank;
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 public class Main {
 
@@ -49,6 +46,11 @@ public class Main {
         User user = new User("Neo","Zion");
 
         //-- User Authentication
+
+        /**
+         *  -!!- Перенести аутентификацию пользователя в отдельный метод + сделать unit-тест на него -!!-
+         */
+
        /* do {
             System.out.print("Enter login: ");
 
@@ -91,14 +93,20 @@ public class Main {
                   String tags = "";
 
                   System.out.println("\nAdding a new note:");
-                  System.out.print("Enter note Name; If there is NO name => press Enter \n --> ");
+                  System.out.print("Enter note Name; If there is NO name => press Enter... \n --> ");
                   name = name.concat(consoleReader.readLine());
 
-                  System.out.print("\nEnter note Text --> ");
-                  txt = txt.concat(consoleReader.readLine());
+                  do {
+                      System.out.print("\nEnter note Text --> ");
+
+                      txt = txt.concat(consoleReader.readLine());
+
+                      System.out.print("\nThe note must have the text!");
+
+                  } while (txt.isEmpty());
 
                   do {
-                      System.out.print("\nEnter note hashTags;\n Examples: 1.#work 2.#work_hard 3.#noPain#no_Gain...\n If there are NO hashTags => press Enter \n --> ");
+                      Utility.printTagsMenu();
                       tags = tags.concat(consoleReader.readLine());
 
                       if (Utility.checkTagsString(tags)) {
@@ -128,12 +136,9 @@ public class Main {
                       System.out.print("Enter Number of note to delete -> ");
                       num = scanner.nextInt();
 
-                      if (num < user.getNumberOfNotes()) // check number
-                       {
-                          user.deleteNode(num-1);
-                          break;
-                       }
-                      else System.out.println(" Error! Incorrect number of Note!");
+                     if (user.deleteNode(num-1)) break;
+                      else
+                         System.out.println(" Error! Incorrect number of Note!");
                   } while(true);
 
                   break; // end case 2 - Delete note
@@ -141,7 +146,7 @@ public class Main {
 
               case 3: // Edit note
                {
-                  int endFl;
+                  int endFl = -1;
                   int noteNum;
                   int optionNum;
 
@@ -160,6 +165,7 @@ public class Main {
                                   "3. Edit hashTags\n" +
                                   "4. Exit\n" +
                                   "----> ");
+
                           optionNum = scanner.nextInt();
 
                           switch (optionNum){
@@ -167,21 +173,35 @@ public class Main {
                                   System.out.println("Old Name: " + user.getOneNote(noteNum).getName());
                                   System.out.print("Enter new Name -> ");
 
-                                  user.getOneNote(noteNum).setName(consoleReader.readLine());
+                                  user.modifyNoteName(consoleReader.readLine(),noteNum);
+
                                   break;
                               }
                               case 2:{ // Edit Text
                                   System.out.println("Old Text: " + user.getOneNote(noteNum).getText());
                                   System.out.print("Enter new Text -> ");
 
-                                  user.getOneNote(noteNum).setText(consoleReader.readLine());
+                                  user.modifyNoteText(consoleReader.readLine(),noteNum);
+
                                   break;
                               }
                               case 3:{ // Edit hashTags
-                                  System.out.println("Old hashTags: " + user.getOneNote(noteNum).getHashTags());
-                                  System.out.print("Enter new hashTags -> ");
+                                  String tags = "";
+                                  System.out.println("Old hashTags: " + user.getOneNote(noteNum).tagsToString());
+                                  // Обернуть првоерку и ввод в отдельный метод ?
 
-                                  user.getOneNote(noteNum).setHashTags(consoleReader.readLine());
+                                  do {
+                                      Utility.printTagsMenu();
+                                      tags = consoleReader.readLine();
+
+                                      if (Utility.checkTagsString(tags)) {
+                                          break;
+                                      }
+                                      else System.out.println("Error! Incorrect format of the entered tags!");
+                                  } while (true);
+
+                                  user.modifyNoteTags(consoleReader.readLine(),noteNum);
+
                                   break;
                               }
                               default: System.out.println("Error! Wrong option number!"); break;
@@ -210,6 +230,8 @@ public class Main {
                                     "3. Exit\n" +
                                     " ---> ");
 
+                      // String sss = scanner.nextLine();
+
                        mode = scanner.nextInt();
 
                        switch (mode)
@@ -217,15 +239,40 @@ public class Main {
                            case 1:{ // filtering by date
                                // !! Расширить - поиск по отдельному году, месяц и дню
 
-                               System.out.print("Enter date in format \"DD MM YYYY\"\n --> ");
+                               int yy = -2;
+                               int mm = -2;
+                               int dd = -2;
 
-                               int dd = scanner.nextInt();
-                               int mm = scanner.nextInt();
-                               int yy = scanner.nextInt();
+                               String str;
 
-                               LocalDate ttt = LocalDate.of(yy,mm,dd);
+                               System.out.print("Enter Year or/and Month or/and Day;\n   If no value => Press Enter...\n");
 
-                               System.out.println(NotesHandler.viewFiltering(user.getNotes(),ttt));
+                               consoleReader.readLine();
+
+                               System.out.print("Year --> ");
+
+                               str = consoleReader.readLine();
+
+                               if (str.isEmpty()) yy = -1;
+                                else
+                                   yy = Integer.parseInt(str);
+
+                               System.out.print("Month --> ");
+                               str = consoleReader.readLine();
+                               if (str.isEmpty()) mm = -1;
+                               else
+                                   mm = Integer.parseInt(str);
+
+                               System.out.print("Day --> ");
+                               str = consoleReader.readLine();
+                               if (str.isEmpty()) dd = -1;
+                               else
+                                   dd = Integer.parseInt(str);
+
+                               System.out.println(NotesHandler.viewFiltering(user.getNotes(),yy,mm,dd)); // old
+
+                             //  LocalDate ttt = LocalDate.of(yy,mm,dd);
+                             //  System.out.println(NotesHandler.viewFiltering(user.getNotes(),ttt)); // old
                                break;
                            }
 
@@ -260,11 +307,16 @@ public class Main {
                    String content;
                    ArrayList<Note> res = new ArrayList<>();
 
-                   System.out.print("\nЕnter the search substring --> ");
+                   System.out.print("\nEnter the search substring --> ");
                    content = consoleReader.readLine();
 
                    System.out.println("Search results:");
                    res = NotesHandler.contentSearch(user.getNotes(),content);// Search
+
+                   for (Note not : res)
+                    {
+                        System.out.println(not.toString());
+                    }
 
                   break;
                }
