@@ -42,6 +42,10 @@ public class Main {
     //=====================================
 
         //  ALARM  - исключения - https://habr.com/ru/post/112042/
+        
+        // try to use help func 
+        // String nulltoempty() // only for strings
+        //  return s == null ? "" : s
 
         User user = new User("Neo","Zion");
 
