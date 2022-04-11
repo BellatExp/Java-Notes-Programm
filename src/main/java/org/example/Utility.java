@@ -11,18 +11,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Класс {@code Utility} содержит вспомогательные метеоды для работы с классами User и Note.
+ * Класс {@code Utility} содержит вспомогательные методы для работы с объектами классов User и Note.
  *
- * @author Lev 'aka' BellatExp (GitHub)
+ * @author  BellatExp (GitHub)
  * @version 1.3
  */
 public class Utility {
 
     /**
-     * Вывод для пользователя  в консоль меню опций.
+     * Вывод в консоль меню опций для работы с записями.
      */
-    public static void printMenu()
-    {
+    public static void printMenu() {
         System.out.print("Choose option:\n" +
                 "1. Add note\n" +
                 "2. Delete note\n" +
@@ -34,21 +33,45 @@ public class Utility {
     }
 
     /**
-     * Вывод для пользваотеля в консоль информирующего сообщения для ввода хештегов.
+     * Вывод в консоль информирующего сообщения для ввода хештегов.
      */
-    public static void printTagsMenu()
-     {
+    public static void printTagsMenu() {
          System.out.print("\nEnter note hashTags;\n Examples: 1.#work 2.#work_hard 3.#noPain#no_Gain...\n If there are NO hashTags => press Enter \n --> ");
      }
 
     /**
-     * Чтение и парсинг заметок из файла, сохранение считанных заметок в виде списка объектов класса Note.
+     * Аутентификация пользователя user по указанному логину login и паролю password
+     *
+     * @param user Пользователь
+     * @param login Логин
+     * @param password Пароль
+     * @return true - Аутентификация пройдена. false - неверный логин и/или пароль.
+     */
+     public static boolean userAuthentication(User user, String login, String password) {
+          if (user.getLogin().equals(login) & user.getPassword().equals(password)) {
+              return true;
+           }
+          else return false;
+      }
+
+     public static boolean checkLogin(User user, String login) {
+         if (user.getLogin().equals(login)) return true;
+         else
+             return false;
+     }
+    public static boolean checkPassword(User user, String password) {
+        if (user.getPassword().equals(password)) return true;
+        else
+            return false;
+    }
+
+    /**
+     * Чтение и парсинг заметок из файла. Считанные заметки сохарняются в список заметок пользователя user.
      *   Парсинг заметок выполняется посредством использования регулярного выражения - (\d+-\d\d-\d\d)\s\'(\D+)?\'\s\'(\D+)\'\s?(\#\D+)?
      *
      * @param user Пользователь
      */
-    public static void readUserNotes(User user)  // reading and parsing users notes from file
-    {
+    public static boolean readUserNotes(User user) { // reading and parsing users notes from file
         try{
             String[] sMas;
             Pattern patt = Pattern.compile("(\\d+-\\d\\d-\\d\\d)\\s\\'(\\D+)?\\'\\s\\'(\\D+)\\'\\s?(\\#\\D+)?"); // RegExp
@@ -69,24 +92,27 @@ public class Utility {
             bufreader.close();
             freader.close();
 
-            user.getNotes().forEach(System.out::println);
+            //user.getNotes().forEach(System.out::println);
+
+            return true;
         }
         catch (FileNotFoundException e) {
             e.printStackTrace();
+            return false;
         }
         catch (IOException e)
         {
             e.printStackTrace();
+            return false;
         }
     }
 
     /**
-     * Запись в файл списка заметок пользователя с предварительным преобразованием заметки к следующему формату:
-     *          ФомратеYYYY-MM-DD 'note_name' 'note_text' #tag1#tag2...
+     * Запись списка заметок в файл, с предварительным преобразованием заметки к следующему формату: YYYY-MM-DD 'note_name' 'note_text' #tag1#tag2...
      *
      * @param notes Список заметок
      */
-    public static void writeUsersNotes(ArrayList<Note> notes) { // re-writing usersNotes
+    public static boolean writeUsersNotes(ArrayList<Note> notes) { // re-writing usersNotes
 
         try {
             FileWriter fwriter = new FileWriter("src/main/resources/notes/Notes.txt",false); // false - to overwrite;
@@ -103,24 +129,27 @@ public class Utility {
                  fwriter.write(prepNote);
              }
             fwriter.close();
+
+            return true;
         }
         catch (FileNotFoundException e) {
             e.printStackTrace();
+            return false;
         }
         catch (IOException e)
         {
             e.printStackTrace();
+            return false;
         }
     }
 
     /**
-     * Проверка корректности введённых пользователем хештегов в формате строки
+     * Проверка корректности введённых пользователем хештегов.
      *
-     * @param str строка с хештегами
+     * @param str Строка с хештегами
      * @return true - хештеги пршли проверку; false - ошибка в формате хештегов
      */
-    public static boolean checkTagsString(String str)
-    {
+    public static boolean checkTagsString(String str) {
         if (str.isEmpty()) {
             return true;
          }
@@ -140,13 +169,13 @@ public class Utility {
     }
 
     /**
-     * Формирование объекта LocalDate из строки
+     * Формирование объекта LocalDate из строки str
      *
      * @param str Строка с датой в формате YYYY-MM-DD
-     * @return Сформированная дата
+     * @return Дата
      */
-    public static LocalDate stringToDate(String str)  // forming Date from String
-    {
+    public static LocalDate stringToDate(String str) { // forming Date from String
+
         String[] dat;
         dat = str.split("-");
 
@@ -157,13 +186,12 @@ public class Utility {
     }
 
     /**
-     * Разбиение строки с хештегами н список отдельных хештегов
+     * Разбор строки хештегов на отдельные хештеги.
      *
-     * @param tags строка с хештегами
-     * @return
+     * @param tags Строка с хештегами
+     * @return Список хештегов
      */
-    public static ArrayList<String> tagsToList(String tags) //
-     {
+    public static ArrayList<String> tagsToList(String tags) {
          ArrayList<String> res = new ArrayList<>();
 
          if (tags == null) return res; // ret empty list
@@ -178,6 +206,4 @@ public class Utility {
 
          return res;
      }
-
 }
-

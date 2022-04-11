@@ -2,10 +2,18 @@ package org.example;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+
+/* Краткая инструкция:
+  1) При запуске программы введите следующие логин и пароль:
+   -- Логин: Neo
+   -- Пароль: DejaVu
+  2) Выберете желамую опцию в меню;
+  3) Следуйте указанным инструкциям;
+  4) Повторитре п. 2-3.
+ */
 
 public class Main {
 
@@ -15,71 +23,60 @@ public class Main {
 
         BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
 
-    //============= SANDBOX ============
-        /*LocalDate ld = LocalDate.now();
+        System.out.println("Instructions:\n" +
+                "1) Enter the following username and password:\n" +
+                "-- Login: Neo\n-- Password: DejaVu\n" +
+                "2) Select an option from the menu;\n" +
+                "3) Follow the instructions;\n" +
+                "4) Repeat steps 2-3;\n");
 
-        System.out.println(ld.getDayOfMonth());
-        System.out.println(ld.getMonthValue());
-        System.out.println(ld.getYear());
+        System.out.println("Wake up, Neo... Wake up... It's me - DejaVu");
 
-        LocalDate ent = LocalDate.of(2022,5,4);
+        User user = new User("Neo","DejaVu");
 
-        System.out.println(ld.getDayOfMonth());
-        System.out.println(ld.getMonthValue());
-        System.out.println(ld.getYear());
-
-        System.out.print("Enter date in format DD MM YYYY");
-
-        int d = scanner.nextInt();
-        int m = scanner.nextInt();
-        int y = scanner.nextInt();
-
-        LocalDate ggg = LocalDate.of(y,m,d);
-
-        System.out.println(ggg.getDayOfMonth());
-        System.out.println(ggg.getMonthValue());
-        System.out.println(ggg.getYear()); */
-    //=====================================
-
-        //  ALARM  - исключения - https://habr.com/ru/post/112042/
-        
-        // try to use help func 
-        // String nulltoempty() // only for strings
-        //  return s == null ? "" : s
-
-        User user = new User("Neo","Zion");
-
-        //-- User Authentication
-
-        /**
-         *  -!!- Перенести аутентификацию пользователя в отдельный метод + сделать unit-тест на него -!!-
-         */
-
-       /* do {
+        // User Authentication
+        // Ver 2.0
+        do {
             System.out.print("Enter login: ");
 
-            if (scanner.nextLine().equals(user.getLogin()) == false)
-             {
+            if (Utility.checkLogin(user,consoleReader.readLine()) == false) {
                 System.out.print("Error! Incorrect login!\n");
                 continue;
-             }
+            }
 
             System.out.print("Enter password: ");
 
-            if (scanner.nextLine().equals(user.getPassword()) == false)
-             {
+            if (Utility.checkPassword(user,consoleReader.readLine()) == false) {
                 System.out.print("Error! Incorrect password!\n");
              }
             else break;
-        } while(true);
 
-        System.out.println("\nAccess granted... Welcome, " + user.getLogin()); */
+        } while(true);
+        // ==============================================================
+
+        // ALT ver 2.0
+        /*String login = "";
+        String pass = "";
+
+
+        do {
+            System.out.print("Enter login: ");
+            login = consoleReader.readLine();
+
+            System.out.print("Enter password: ");
+            login = consoleReader.readLine();
+
+            if (Utility.userAuthentication(user,login,pass) == false)
+              System.out.print("Error! Incorrect login/password!\n");
+
+        } while (Utility.userAuthentication(user,login,pass) == false);
+        // ==============================================================
+        */
+
+        System.out.println("\nAccess granted... Welcome back, Mr. Anderson.");
 
         // Reading Users's Notes from file
           Utility.readUserNotes(user);
-
-       // Note not = new Note("Job","9:00 - Meeting","#Job");
-       // System.out.println(not.toString());
 
         int option = 0; // option from menu
 
@@ -87,6 +84,9 @@ public class Main {
          {
             Utility.printMenu();
             option = scanner.nextInt();
+
+       // Проблема - после метода scanner.nextInt() остаётся \n, => scanner.nextLine() автоматически подхватывает \n
+                 // => крайне неудобно считывать целую строку с помощью Scanner'a
 
           switch (option)
           {
@@ -98,12 +98,13 @@ public class Main {
 
                   System.out.println("\nAdding a new note:");
                   System.out.print("Enter note Name; If there is NO name => press Enter... \n --> ");
-                  name = name.concat(consoleReader.readLine());
+
+                  name = consoleReader.readLine();
 
                   do {
-                      System.out.print("\nEnter note Text --> ");
+                      System.out.print("Enter note Text --> ");
 
-                      txt = txt.concat(consoleReader.readLine());
+                      txt = consoleReader.readLine();
 
                       System.out.print("\nThe note must have the text!");
 
@@ -111,7 +112,7 @@ public class Main {
 
                   do {
                       Utility.printTagsMenu();
-                      tags = tags.concat(consoleReader.readLine());
+                      tags = consoleReader.readLine();
 
                       if (Utility.checkTagsString(tags)) {
                           user.addNote(new Note(name, txt, tags));
@@ -177,6 +178,7 @@ public class Main {
                                   System.out.println("Old Name: " + user.getOneNote(noteNum).getName());
                                   System.out.print("Enter new Name -> ");
 
+                                 // consoleReader.readLine();
                                   user.modifyNoteName(consoleReader.readLine(),noteNum);
 
                                   break;
@@ -192,7 +194,6 @@ public class Main {
                               case 3:{ // Edit hashTags
                                   String tags = "";
                                   System.out.println("Old hashTags: " + user.getOneNote(noteNum).tagsToString());
-                                  // Обернуть првоерку и ввод в отдельный метод ?
 
                                   do {
                                       Utility.printTagsMenu();
@@ -208,12 +209,23 @@ public class Main {
 
                                   break;
                               }
+
+                              case 4: break;
+
                               default: System.out.println("Error! Wrong option number!"); break;
                           }
                       } while (optionNum != 4);
 
-                      System.out.print("Do you want to edit another note? 1 - Yes; 0 - No;");
-                      endFl = scanner.nextInt();
+                         System.out.print("Do you want to edit another note? 1 - Yes; 0 - No; -> ");
+                      do{
+                          endFl = scanner.nextInt();
+                          if ( endFl != 0 & endFl != 1)
+                          {
+                              System.out.println("Error! Wrong Option!");
+                              System.out.print("Do you want to edit another note? 1 - Yes; 0 - No; -> ");
+                          }
+                          else break;
+                      } while (true);
 
                   } while (endFl != 0);
 
@@ -229,54 +241,43 @@ public class Main {
                    do {
                        System.out.print("Choose a filter for viewing notes:\n " +
                                     "1. Filtering by date\n " +
-                                    "2. Filtering by hashTags\n" +
-                      //   AHTUNG! - 3. - Both?
+                                    "2. Filtering by hashTags\n " +
                                     "3. Exit\n" +
                                     " ---> ");
 
-                      // String sss = scanner.nextLine();
-
-                       mode = scanner.nextInt();
+                       mode = Integer.parseInt(consoleReader.readLine());
 
                        switch (mode)
                        {
-                           case 1:{ // filtering by date
-                               // !! Расширить - поиск по отдельному году, месяц и дню
+                           case 1:{ // filtering by date; NOTE - Extended ver
 
-                               int yy = -2;
-                               int mm = -2;
-                               int dd = -2;
+                               int yy = -1;
+                               int mm = -1;
+                               int dd = -1;
 
                                String str;
 
-                               System.out.print("Enter Year or/and Month or/and Day;\n   If no value => Press Enter...\n");
-
-                               consoleReader.readLine();
+                               System.out.print("Enter Year/Month/Day;\n If no YY/MM/DD value => Press Enter...\n");
 
                                System.out.print("Year --> ");
 
                                str = consoleReader.readLine();
 
-                               if (str.isEmpty()) yy = -1;
-                                else
+                               if (!str.isEmpty())
                                    yy = Integer.parseInt(str);
 
                                System.out.print("Month --> ");
                                str = consoleReader.readLine();
-                               if (str.isEmpty()) mm = -1;
-                               else
+                               if (!str.isEmpty())
                                    mm = Integer.parseInt(str);
 
                                System.out.print("Day --> ");
                                str = consoleReader.readLine();
-                               if (str.isEmpty()) dd = -1;
-                               else
+                               if (!str.isEmpty())
                                    dd = Integer.parseInt(str);
 
-                               System.out.println(NotesHandler.viewFiltering(user.getNotes(),yy,mm,dd)); // old
+                               NotesHandler.viewFiltering(user.getNotes(),yy,mm,dd).forEach(System.out::println); // new ver
 
-                             //  LocalDate ttt = LocalDate.of(yy,mm,dd);
-                             //  System.out.println(NotesHandler.viewFiltering(user.getNotes(),ttt)); // old
                                break;
                            }
 
@@ -293,7 +294,7 @@ public class Main {
                                    else System.out.println("Error! Incorrect format of the entered tags!");
                                } while (true);
 
-                               System.out.println(NotesHandler.viewFiltering(user.getNotes(),tags));
+                               NotesHandler.viewFiltering(user.getNotes(),tags).forEach(System.out::println); // new ver
 
                                break;
                            }
@@ -311,7 +312,7 @@ public class Main {
                    String content;
                    ArrayList<Note> res = new ArrayList<>();
 
-                   System.out.print("\nEnter the search substring --> ");
+                   System.out.print("Enter the search substring --> ");
                    content = consoleReader.readLine();
 
                    System.out.println("Search results:");
@@ -327,7 +328,9 @@ public class Main {
               case 6: // Exit - save all notes to file
                {
                 Utility.writeUsersNotes(user.getNotes()); // Re-Write users notes to file
+                break;
                }
+
               default: System.out.println("Error! Wrong option number!"); break;
           }
          } while (option != 6);

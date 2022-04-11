@@ -1,4 +1,6 @@
 2000-12-03 'First. Damn!' 'Hello, My friend. C++.' #work#hello#help_me
 1000-05-06 'First. Damn!' 'Hello, My friend. Python' 
 0500-01-08 '' 'Hello, My friend. Java. C++.' 
-2022-04-08 'secondTry' 'helpME!' #3#round#is#mine
+2022-04-08 'Second' 'helpME!' 
+2022-04-11 'final' 'Victory is mine!' #Vi
+2022-04-11 'Grand Finale' 'Finally...' #Vi

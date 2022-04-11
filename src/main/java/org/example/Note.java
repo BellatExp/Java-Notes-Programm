@@ -6,7 +6,7 @@ import java.util.ArrayList;
 /**
  * Класс {@code Note} представляет заметку пользователя.
  *
- * @author Lev 'aka' BellatExp (GitHub)
+ * @author BellatExp (GitHub)
  * @version 1.3
  *
  */
@@ -28,13 +28,12 @@ public class Note {
     private LocalDate date;
 
     /**
-     * Список хештегов заметки. Каждый тег хранится в формате '#tag1'.
+     * Список хештегов заметки. Каждый хештег хранится в формате '#tag_namе'.
      */
     private ArrayList<String> hashTags;
 
     /**
-     * Конструктор по умолчанию инициализирует все поля вновь созданного объекта пустыми значениями кроме поля date.
-     *   Поле date инициализуется значением текущей даты создания заметки.
+     * Создаёт новую пустую заметку. Все поля инициализированы пустыми значениями, кроме поля date - инициализируется текущей датой.
      */
     public Note()
     {
@@ -45,13 +44,12 @@ public class Note {
     }
 
     /**
-     * Конструктор с параметрами - создаёт новую заметку с переданными значениями.
-     *   Хештеги передаются в формате строки.
-     *   Поле date инициализуется значением текущей даты создания заметки.
+     * Создаёт новую строку с именем name, текстом text и хештегами tags. Хештеги передаются в формате строки.
+     *   Поле date инициализируется текущей датой.
      *
-     * @param name Назваание заметки
+     * @param name Название заметки
      * @param text Текст заметки
-     * @param tags Теги заметки в строкоовм формате
+     * @param tags Хештеги в формате строки
      */
     public Note(String name, String text, String tags){ // Constructor for creating a new obj
         this();
@@ -59,7 +57,7 @@ public class Note {
         this.text = text;
         this.hashTags = Utility.tagsToList(tags);
     }
-        /*public Note(String name, String text, ArrayList<String> tags){ // Constructor for creating a new obj
+    /* public Note(String name, String text, ArrayList<String> tags){ // Constructor for creating a new obj
         this.name = name;
         this.text = text;
         this.date = LocalDate.now();
@@ -75,14 +73,12 @@ public class Note {
     }*/
 
     /**
-     * Конструктор с параметрами - создаёт новую заметку с переданными значениями.
-     *   Хештеги передаются в формате строки.
-     *   Поле date инициализуется переданным значением date.
+     * Создаёт новую строку с именем name, текстом text, хештегами tags и датой date. Хештеги передаются в формате строки.
      *
-     * @param name Назваание заметки
+     * @param name Название заметки
      * @param text Текст заметки
-     * @param tags Теги заметки в строкоовм формате
-     * @param date дата создания заметки
+     * @param tags Хештеги в формате строки
+     * @param date Дата создания заметки
      */
     public Note(String name, String text, String tags, LocalDate date){ // Constructor for creating obj after reading a file
         this.name = "";
@@ -122,9 +118,9 @@ public class Note {
     }
 
     /**
-     * Функция пребразования списка хештегов заметки в строку.
+     * Преобразует список хештегов в строку
      *
-     * @return возвращает список хештегов в формате строки
+     * @return Строка хештегов заметки
      */
     public String tagsToString() {
 
@@ -136,11 +132,11 @@ public class Note {
      }
 
     /**
-     * Функция поиска любого хештега из переданного списка среди хештегов заметки.
-     *   После нахождения первого подхоящего хештега функция возвращается true.
+     * Поиск любого хештега из переданного списка среди хештегов заметки.
+     *    После нахождения первого подхоящего хештега функция возвращается true.
      *
-     * @param tagslist список хештегов для поиска
-     * @return Результат поиска: true - какой-либо хештег найден; false - в заметке отсутствуют все переданными для поиска хештеги.
+     * @param tagslist Список хештегов для поиска
+     * @return True - какой-либо хештег найден; false - переданные хештеги в заметке не найдены.
      */
      public boolean anyTag(ArrayList<String> tagslist){
         for (String loctag : tagslist)

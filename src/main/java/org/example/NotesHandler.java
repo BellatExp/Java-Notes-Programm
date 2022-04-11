@@ -1,13 +1,12 @@
 package org.example;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
- * Класс {@code NotesHandler} содержит вспомогательные методы отбора и поиска среди заметок пользователя.
+ * Класс {@code NotesHandler} содержит вспомогательные функции отбора и поиска заметок пользователя.
  *
- * @author Lev 'aka' BellatExp (GitHub)
+ * @author BellatExp (GitHub)
  * @version 1.3
  *
  */
@@ -15,11 +14,12 @@ import java.util.HashSet;
 public class NotesHandler { // Auxiliary class for working with Nodes
 
     /**
-     *  Поиск среди записей "по контенту" среди Названия и Текстаи заметки
+     *  Поиск заметок по принципу "содержит" строку content в названии и в тексте заметки
      *
      * @param notes Список заметок
-     * @param content "контент" для поиска
-     * @return
+     * @param content "Контент" для поиска
+     *
+     * @return Список найденных заметок
      */
     public static ArrayList<Note> contentSearch(ArrayList<Note> notes, String content) //
     {
@@ -35,79 +35,52 @@ public class NotesHandler { // Auxiliary class for working with Nodes
         return result;
     }
 
-
     /**
-     *  Фильтрация списка заметок по дате
+     *  Фильтрация списка заметок notes по отдельным составляющим даты - году year, месяцу month и дню day.
      *
-     * @param notes список заметок
-     * @param yy
-     * @param mm
-     * @param dd
-     * @return
+     * @param notes Список заметок
+     * @param year Год
+     * @param month Месяц
+     * @param day День
+     * @return Список отобранных заметок
      */
-    public static String viewFiltering (ArrayList<Note> notes, int yy, int mm, int dd) // filtering by date
+    public static ArrayList<Note> viewFiltering (ArrayList<Note> notes, int year, int month, int day)
     {
-        // !! Расширить - поиск по отдельному году, месяц и дню
-
-        // "Водопадный отбор" - Если указан год, отбор по году, затем, если есть месяц по месяцу (из отобранных ранеее), затем по дню
-
         ArrayList<Note> tmpNotes = new ArrayList<>(notes);
 
-        if (yy != -1)
-         {
-             // Отбор путём удаления элементов по году из вспомогательного списка
-
-             tmpNotes.removeIf(not -> not.getDate().getYear() != yy);
+        /* "Водопадный" отбор:
+         Если указан год -> отбор по году. Затем, если указан месяц -> по месяцу(из отобранных ранее).
+          Затем, если указан день -> по дню (из отобранных ранее).
+         */
+        if (year != -1) {
+            tmpNotes.removeIf(not -> not.getDate().getYear() != year); // Отбор по году из вспомогательного списка
          }
-        if (mm != -1)
-         {
-             // Отбор путём удаления элементов по месяцу из вспомогательного списка
-             tmpNotes.removeIf(not -> not.getDate().getMonthValue() != mm);
+        if (month != -1) {
+            tmpNotes.removeIf(not -> not.getDate().getMonthValue() != month); // Отбор по месяцу из вспомогательного списка
          }
-        if (dd != -1)
-         {
-             // Отбор путём удаления элементов по дню из вспомогательного списка
-             tmpNotes.removeIf(not -> not.getDate().getDayOfMonth() != dd);
+        if (day != -1) {
+            tmpNotes.removeIf(not -> not.getDate().getDayOfMonth() != day); // Отбор по дню из вспомогательного списка
          }
 
-        String result = "";
-
-        for (Note not : tmpNotes)
-        {
-            result = result.concat(not.toString()); // adding proper note to result
-        }
-
-
-      /*  for (Note not: notes) { // Search in every note
-
-            if (not.getDate().isEqual(date))
-            {
-                result = result.concat(not.toString()); // adding proper note to result
-            }
-        }*/
-
-        return result;
+        return tmpNotes;
     }
 
     /**
-     * Фильтрация заметок по хештегам
+     * Фильтрация списка заметок notes по хештегам tags.
      *
      * @param notes список заметок
      * @param tags хештеги в формате строки
-     * @return
+     * @return Множество отобранных заметок
      */
-    public static String viewFiltering (ArrayList<Note> notes, String tags) // filtering by tags
+    public static HashSet<Note> viewFiltering (ArrayList<Note> notes, String tags) // filtering by tags
     {
-       HashSet<String> preRes = new HashSet<>();
-
-       ArrayList<String> tagslist = Utility.tagsToList(tags);
+       HashSet<Note> preRes = new HashSet<>();
 
         for (Note not : notes){
-            if (not.anyTag(tagslist)) preRes.add(not.toString());
+            if (not.anyTag(Utility.tagsToList(tags))) preRes.add(not);
         }
 
-        // Return hashset?
+        return preRes;
 
-        return preRes.toString();
     }
 }

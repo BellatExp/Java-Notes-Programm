@@ -1,18 +1,27 @@
 package org.example;
 
 import junit.framework.Assert;
-import junit.framework.TestCase;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class UtilityTest extends TestCase {
+class UtilTest {
 
     @Test
-    @DisplayName("Enter HashTags ")
-    public void testCheckTagsString() {
+    void userAuthentication() {
+
+        User user = new User("1","2");
+
+        assertTrue(Utility.userAuthentication(user,"1","2"));
+        assertFalse(Utility.userAuthentication(user,"2","3"));
+    }
+
+    @Test
+    //@DisplayName("Enterg tags")
+    void checkTagsString() {
+
+        assertTrue(Utility.checkTagsString("#Vi"));
 
         assertTrue(Utility.checkTagsString("#work"));
         assertTrue(Utility.checkTagsString(""));
