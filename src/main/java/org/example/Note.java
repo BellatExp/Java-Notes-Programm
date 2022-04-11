@@ -136,7 +136,7 @@ public class Note {
      *    После нахождения первого подхоящего хештега функция возвращается true.
      *
      * @param tagslist Список хештегов для поиска
-     * @return True - какой-либо хештег найден; false - переданные хештеги в заметке не найдены.
+     * @return True - какой-либо хештег найден; false - хештеги в заметке не найдены.
      */
      public boolean anyTag(ArrayList<String> tagslist){
         for (String loctag : tagslist)
